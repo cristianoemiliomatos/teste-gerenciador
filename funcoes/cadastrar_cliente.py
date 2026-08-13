@@ -34,13 +34,12 @@ class Cadastro:
             conn.commit()
 
 
+if __name__ == "__main__":
+    nome = input("Nome: ")
+    cpf = input("CPF: ")
+    endereco = input("Endereço: ")
+    email = input("Email: ")
 
-
-nome = input("Nome: ")
-cpf = input("CPF: ")
-endereco = input("Endereço: ")
-email = input("Email: ")
-
-cliente = Cadastro(nome, cpf, endereco, email)
-cliente.cadastrar()
-print("Cadastrado!")
+    cliente = Cadastro(nome, cpf, endereco, email)
+    cliente.cadastrar()
+    print("Cadastrado!")

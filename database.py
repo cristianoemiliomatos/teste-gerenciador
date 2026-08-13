@@ -8,12 +8,11 @@ conexao = sqlite3.connect(clientes)
 cursor = conexao.cursor()
 
 cursor.execute("""
-CREATE TABLE IF NOT EXISTS vendas (
+CREATE TABLE IF NOT EXISTS funcionarios (
     id INTEGER PRIMARY KEY AUTOINCREMENT,
-    id_cliente INTEGER,
-    produto TEXT NOT NULL,
-    valor REAL NOT NULL CHECK (valor > 0),
-    FOREIGN KEY (id_cliente) REFERENCES clientes(id)
+    nome TEXT NOT NULL,
+    salario REAL NOT NULL CHECK (salario > 0),
+    cpf TEXT NOT NULL
 )
 """)
 
