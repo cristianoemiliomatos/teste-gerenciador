@@ -17,5 +17,3 @@ def cadastrar_funcionario():
 
     conexao.commit()
     conexao.close()
-
-cadastrar_funcionario()

@@ -15,4 +15,3 @@ def mudar_nome():
     conexao.commit()
     conexao.close()
 
-mudar_nome()
