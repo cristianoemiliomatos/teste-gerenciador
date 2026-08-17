@@ -1,7 +1,16 @@
 import sqlite3
 from pathlib import Path
+from datetime import datetime
 
-def comprar():
+def comprar(id_cliente=None):
+    
+    if id_cliente is None:
+        try:
+            id_cliente = int(input("Digite o ID do cliente: "))
+        except ValueError:
+            print("ID do cliente inválido !!!")
+            return
+
     while True:
         print("1 - Quero comprar")
         print("2 - Não quero comprar")
@@ -13,8 +22,38 @@ def comprar():
             conexao = sqlite3.connect(banco)
             cursor = conexao.cursor()
 
+            cursor.execute("""
+                CREATE TABLE IF NOT EXISTS vendas (
+                    id INTEGER PRIMARY KEY AUTOINCREMENT,
+                    id_cliente INTEGER,
+                    produto_id INTEGER,
+                    quantidade INTEGER,
+                    valor_total REAL,
+                    data_venda TEXT
+                )
+            """)
+
+            colunas = [coluna[1] for coluna in cursor.execute("PRAGMA table_info(vendas)")]
+            if "id_cliente" not in colunas:
+                cursor.execute("ALTER TABLE vendas ADD COLUMN id_cliente INTEGER")
+            if "produto_id" not in colunas:
+                cursor.execute("ALTER TABLE vendas ADD COLUMN produto_id INTEGER")
+            if "quantidade" not in colunas:
+                cursor.execute("ALTER TABLE vendas ADD COLUMN quantidade INTEGER")
+            if "valor_total" not in colunas:
+                cursor.execute("ALTER TABLE vendas ADD COLUMN valor_total REAL")
+            if "data_venda" not in colunas:
+                cursor.execute("ALTER TABLE vendas ADD COLUMN data_venda TEXT")
+
             cursor.execute("SELECT id, nome, quantidade, preco FROM produtos")
             produtos = cursor.fetchall()
+
+            cursor.execute("SELECT 1 FROM clientes WHERE id = ?", (id_cliente,))
+            if cursor.fetchone() is None:
+                print("Cliente não encontrado !!!")
+                conexao.close()
+                return
+
             for id, nome, quantidade, preco in produtos:
                 print(f"ID: {id} - PRODUTO - {nome} - Em estoque - {quantidade}")
 
@@ -49,8 +88,17 @@ def comprar():
                 "UPDATE produtos SET quantidade = quantidade - ? WHERE id = ?",
                 (quantidade1, escolha)
             )
+
+            cursor.execute("""
+                INSERT INTO vendas
+                (id_cliente, produto_id, quantidade, valor_total, data_venda)
+                VALUES (?, ?, ?, ?, ?)
+            """, (id_cliente, escolha, quantidade1, preco_compra,
+                datetime.now().strftime("%d/%m/%Y %H:%M:%S")))
+
             conexao.commit()
             cursor.close()
             conexao.close()
 
-
+if __name__ == "__main__":
+    comprar()
